@@ -1,0 +1,20 @@
+name: "Sync Fork"
+description: "Keeps forks updated."
+branding:
+  icon: "tag"
+  color: "blue"
+inputs:
+  method:
+    description: "Method to use. Can be merge-ff or rebase."
+    required: true
+    default:
+  upstream_url:
+    description: "URL of Upstream. MUST be public!"
+    required: true
+  upstream_branch:
+    description: "Upstream Branch to Merge/Rebase"
+    required: true
+    default: "master"
+runs:
+  using: "docker"
+  image: "Docekrfile"

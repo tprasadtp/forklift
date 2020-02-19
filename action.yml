@@ -4,17 +4,41 @@ branding:
   icon: "tag"
   color: "blue"
 inputs:
-  method:
-    description: "Method to use. Can be merge-ff or rebase."
-    required: true
-    default:
   upstream_url:
-    description: "URL of Upstream. MUST be public!"
+    description: "Upstream URL. This MUST be public!"
     required: true
   upstream_branch:
     description: "Upstream Branch to Merge/Rebase"
     required: true
     default: "master"
+  branch:
+    description: "Branch to Merge/Rebase"
+    required: true
+    default: "master"
+  method:
+    description: "Method to use. Can be `merge-ff` or `rebase`."
+    required: true
+    default: "rebase"
+  sync_tags:
+    description: "Sync Tags"
+    default: false
+    required: true
+  args:
+    description: "Extra arguments"
+    default: ""
+    required: false
 runs:
   using: "docker"
-  image: "Docekrfile"
+  image: "src/Dockerfile"
+  args:
+    - '--method'
+    - ${{ inputs.method }}
+    - '--branch'
+    - ${{ inputs.branch }}
+    # Upstream
+    - '--upstream-url'
+    - ${{ inputs.upstream_url }}
+    - '--upstream-branch'
+    - ${{ inputs.upstream_branch }}
+    # Extra
+    - ${{ inputs.args }}

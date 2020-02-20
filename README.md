@@ -19,5 +19,4 @@ jobs:
         branch: "master"   # Local Branch
         method: "rebase"   # Merge Method
         args: "--no-push"  # Additional Arguments to pass to the container
-        key: ${{ secrets.GITHUB_SSHKEY }} # Deploy Key with write access
 ```

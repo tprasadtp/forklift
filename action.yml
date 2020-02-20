@@ -1,7 +1,7 @@
-name: "Sync Fork"
-description: "Keeps forks updated."
+name: "ForkLift"
+description: "Keeps Minimal forks updated with their upstream couterparts"
 branding:
-  icon: "tag"
+  icon: "chevrons-right"
   color: "blue"
 inputs:
   upstream_url:
@@ -28,8 +28,9 @@ inputs:
     default: ""
     required: false
   key:
-    required: true
-    description: Deploy Key with write permission
+    required: false
+    description: SSH Deploy Key(Private) with write access to repo
+    default: ""
 runs:
   using: "docker"
   image: "src/Dockerfile"

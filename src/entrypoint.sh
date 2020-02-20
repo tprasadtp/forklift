@@ -9,7 +9,7 @@ readonly NC=$'\e[0m'
 
 function print_info()
 {
-  printf "✦ %s \n" "$@"
+  printf "▶ %s \n" "$@"
 }
 
 function print_success()
@@ -30,7 +30,7 @@ function print_error()
 function print_debug()
 {
   if [[ ${DEBUG} == "true" ]]; then
-    printf "%s✦ %s %s\n" "${GRAY}" "$@" "${NC}"
+    printf "%s⌘ %s %s\n" "${GRAY}" "$@" "${NC}"
   fi
 }
 
@@ -113,14 +113,20 @@ function config_git()
   git config user.name "${GIT_USER:-$GITHUB_ACTOR}"
   git config user.email "${GIT_EMAIL:-$GITHUB_ACTOR@users.noreply.github.com}"
 
-  git config url."git@github.com:".insteadOf https://github.com/
-  git config url."git@github.com:".insteadOf git://
+  if [[ ! -z ${ssh_private_key} ]]; then
 
-  mkdir -p "${HOME}/.ssh"
-  ssh-keyscan -t rsa github.com >> "${HOME}/.ssh/known_hosts"
+    print_info "Setting up SSH"
+    mkdir -p "${HOME}/.ssh"
+    ssh-keyscan -t rsa github.com > "${HOME}/.ssh/known_hosts"
 
-  echo "${ssh_private_key}" > "${HOME}/.ssh/id_ed25519"
-  chmod 400 "${HOME}/.ssh/id_ed25519"
+    echo "${ssh_private_key}" > "${HOME}/.ssh/id_ed25519"
+    chmod 400 "${HOME}/.ssh/id_ed25519"
+    print_info "Setting up to use SSH instead of HTTP"
+    git config url."git@github.com:".insteadOf https://github.com/
+    git config url."git@github.com:".insteadOf git://
+  fi
+
+
 }
 
 function error_on_empty_variable()
@@ -220,6 +226,10 @@ function main()
   error_on_empty_variable "${upstream_branch}" "--upstream-branch"
   error_on_empty_variable "${upstream_url}" "--upstream-url"
   error_on_empty_variable "${checkout_branch}" "--branch"
+
+  if [[ -z ${ssh_private_key} ]] ; then
+    print_warning "SSH Key is not defined!!"
+  fi
 
   configure_upstream
   update_fork

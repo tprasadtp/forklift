@@ -16,7 +16,7 @@ inputs:
     required: true
     default: "master"
   method:
-    description: "Method to use. Can be `merge-ff` or `rebase`."
+    description: "Method to use. Can be `merge`, `merge-ff` or `rebase`."
     required: true
     default: "rebase"
   sync_tags:

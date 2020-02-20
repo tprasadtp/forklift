@@ -185,7 +185,8 @@ function update_fork()
   else
     print_info "Pushing back changes!"
     if [[ ${merge_method} == "rebase" ]]; then
-      git push --force
+      #  Because it checks the remote branch for changes
+      git push --force-with-lease
     else
       git push
     fi

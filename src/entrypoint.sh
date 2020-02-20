@@ -50,7 +50,6 @@ modifications as it might lead to lot of conflicts.
 [-x --upstream-branch]  [Upstream Branch to merge/rebase (Defaults to master)]
 [-u --upstream-url]     [Upstream URL to set (Required)]
 [--no-push]             [Skip Git Push]
-[-k -ssk-key]           [SSK Key. This is not a file but instead ascii armored key]
 [-h --help]             [Display this help message]
 
 Version: ${SYNC_FORK_VERSION:-UNKNOWN}
@@ -113,19 +112,6 @@ function config_git()
   git config user.name "${GIT_USER:-$GITHUB_ACTOR}"
   git config user.email "${GIT_EMAIL:-$GITHUB_ACTOR@users.noreply.github.com}"
 
-  if [[ ! -z ${ssh_private_key} ]]; then
-
-    print_info "Setting up SSH"
-    mkdir -p "${HOME}/.ssh"
-    ssh-keyscan -t rsa github.com > "${HOME}/.ssh/known_hosts"
-
-    echo "${ssh_private_key}" > "${HOME}/.ssh/id_ed25519"
-    chmod 400 "${HOME}/.ssh/id_ed25519"
-    print_info "Setting up to use SSH instead of HTTP"
-    git config url."git@github.com:".insteadOf https://github.com/
-    git config url."git@github.com:".insteadOf git://
-  fi
-
 
 }
 
@@ -161,7 +147,7 @@ function update_fork()
         git rebase --abort
         exit 1
       fi
-  elif [[ ${merge_method} == "merge-ff" ]]; then
+  elif [[ ${merge_method} == "merge-ff-only" ]]; then
     print_info "Using merge with --ff-only"
     git merge --ff-only "upstream/${upstream_branch}" "${checkout_branch}"
     CONFLICTS="$(git ls-files -u | wc -l)"
@@ -171,7 +157,7 @@ function update_fork()
       exit 1
     fi
   elif [[ ${merge_method} == "merge" ]]; then
-    print_info "Using merge"
+    print_info "Using merge with ff"
     git merge "upstream/${upstream_branch}" "${checkout_branch}"
     CONFLICTS="$(git ls-files -u | wc -l)"
     if [[ $CONFLICTS -gt 0 ]] ; then
@@ -209,7 +195,6 @@ function main()
       -x | --upstream-branch)     shift;upstream_branch="${1}";;
       -u | --upstream-url)        shift;upstream_url="${1}";;
       -b | --branch)              shift;checkout_branch="${1}";;
-      -k | --ssh-key)             shift;ssh_private_key="${1}";;
       -h | --help )               display_usage;
                                   exit $?
                                   ;;
@@ -227,9 +212,6 @@ function main()
   error_on_empty_variable "${upstream_url}" "--upstream-url"
   error_on_empty_variable "${checkout_branch}" "--branch"
 
-  if [[ -z ${ssh_private_key} ]] ; then
-    print_warning "SSH Key is not defined!!"
-  fi
 
   configure_upstream
   update_fork

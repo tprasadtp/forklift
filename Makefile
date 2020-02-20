@@ -63,7 +63,7 @@ docker: ## Build DockerHub image (runs as root inide docker)
 		echo -e "\033[92m✱ Tagging as latest \033[0m"; \
 		docker tag $(NAME) $(DOCKER_USER)/$(NAME):latest; \
 		docker tag $(NAME) $(DOCKER_PREFIX_GITHUB)/$(NAME):latest; \
-		if [[ ! -z $(VERSION) ]]; then \
+		if [ ! -z $(VERSION) ]; then \
 		echo -e "\033[92m✱ Tagging as $(VERSION)\033[0m"; \
 			docker tag $(NAME) $(DOCKER_USER)/$(NAME):$(VERSION); \
 			docker tag $(NAME) $(DOCKER_PREFIX_GITHUB)/$(NAME):$(VERSION); \
@@ -81,26 +81,26 @@ docker-push: ## Push docker images (action and user images)
 	@echo -e "\033[92m➜ $@ \033[0m"
 	@if [ $(BRANCH) == "master" ]; then \
 		echo -e "\033[92m✱ Pushing Tag: latest [DockerHub]\033[0m"; \
-		#docker push $(DOCKER_USER)/$(NAME):latest; \
-		if [[ ! -z $(VERSION) ]]; then \
+		docker push $(DOCKER_USER)/$(NAME):latest; \
+		if [ ! -z $(VERSION) ]; then \
 		echo -e "\033[92m✱ Pushing Tag: $(VERSION) [DockerHub]\033[0m"; \
-			#docker push $(DOCKER_USER)/$(NAME):$(VERSION); \
+			docker push $(DOCKER_USER)/$(NAME):$(VERSION); \
 		else \
 		echo -e "\033[93m✱ Skip Pushing Version Tags [DockerHub]\033[0m"; \
 		fi; \
 		echo -e "\033[92m✱ Pushing Tag: latest [GitHub]\033[0m"; \
 		#docker push $(DOCKER_PREFIX_GITHUB)/$(NAME):latest; \
-		if [[ ! -z $(VERSION) ]]; then \
+		if [ ! -z $(VERSION) ]; then \
 		echo -e "\033[92m✱ Pushing Tag: $(VERSION) [GitHub] \033[0m"; \
-			#docker push $(DOCKER_PREFIX_GITHUB)/$(NAME):$(VERSION); \
+			docker push $(DOCKER_PREFIX_GITHUB)/$(NAME):$(VERSION); \
 		else \
 		echo -e "\033[93m✱ Skip Pushing Version Tags [GitHub]\033[0m"; \
 		fi; \
 	else \
 		echo -e "\033[92m✱ Pushing Tag: $(BRANCH)[DockerHub].\033[0m"; \
-		#docker push $(DOCKER_USER)/$(NAME):$(BRANCH); \
+		docker push $(DOCKER_USER)/$(NAME):$(BRANCH); \
 		echo -e "\033[92m✱ Pushing Tag: $(BRANCH)[GitHub] \033[0m"; \
-		#docker push $(DOCKER_PREFIX_GITHUB)/$(NAME):$(BRANCH); \
+		docker push $(DOCKER_PREFIX_GITHUB)/$(NAME):$(BRANCH); \
 	fi
 
 .PHONY: help

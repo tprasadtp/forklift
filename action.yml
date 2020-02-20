@@ -32,7 +32,7 @@ inputs:
     description: Deploy Key with write permission
 runs:
   using: "docker"
-  image: "docker://tprasadtp/sync-fork:latest"
+  image: "src/Dockerfile"
   args:
     - '--method'
     - ${{ inputs.method }}

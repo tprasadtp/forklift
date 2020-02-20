@@ -143,6 +143,8 @@ function update_fork()
 
   git checkout "${checkout_branch}"
 
+  config_git
+
   print_info "Fetching upstream"
   git fetch upstream
   if [[ ${merge_method} == "rebase" ]]; then
@@ -169,7 +171,6 @@ function update_fork()
   fi
 
   # Push back changes
-  config_git
   if [[ ${skip_push} == "true" ]]; then
     print_info "Skipping git push!"
   else

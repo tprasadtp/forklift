@@ -175,7 +175,11 @@ function update_fork()
     print_info "Skipping git push!"
   else
     print_info "Pushing back changes!"
-    git push
+    if [[ ${merge_method} == "rebase" ]]
+      git push --force
+    else
+      git push
+    fi
   fi
 }
 

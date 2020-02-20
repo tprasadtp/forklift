@@ -21,15 +21,18 @@ inputs:
     default: "rebase"
   sync_tags:
     description: "Sync Tags"
-    default: false
+    default: "false"
     required: true
   args:
     description: "Extra arguments"
     default: ""
     required: false
+  key:
+    required: true
+    description: Deploy Key with write permission
 runs:
   using: "docker"
-  image: "src/Dockerfile"
+  image: "docker://tprasadtp/sync-fork:0.1.2"
   args:
     - '--method'
     - ${{ inputs.method }}
@@ -40,5 +43,8 @@ runs:
     - ${{ inputs.upstream_url }}
     - '--upstream-branch'
     - ${{ inputs.upstream_branch }}
+    # Keys
+    - '--ssh-key'
+    - ${{ inputs.KEY }}
     # Extra
     - ${{ inputs.args }}

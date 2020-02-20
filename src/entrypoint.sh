@@ -50,6 +50,7 @@ modifications as it might lead to lot of conflicts.
 [-x --upstream-branch]  [Upstream Branch to merge/rebase (Defaults to master)]
 [-u --upstream-url]     [Upstream URL to set (Required)]
 [--no-push]             [Skip Git Push]
+[-k -ssk-key]           [SSK Key. This is not a file but instead ascii armored key]
 [-h --help]             [Display this help message]
 
 Version: ${SYNC_FORK_VERSION:-UNKNOWN}
@@ -105,6 +106,23 @@ function configure_upstream()
   fi
 }
 
+function config_git()
+{
+  # push to publishing branch
+  print_info "Setting up Git Config"
+  git config user.name "${GIT_USER:-$GITHUB_ACTOR}"
+  git config user.email "${GIT_EMAIL:-$GITHUB_ACTOR@users.noreply.github.com}"
+
+  git config url."git@github.com:".insteadOf https://github.com/
+  git config url."git@github.com:".insteadOf git://
+
+  mkdir -p "${HOME}/.ssh"
+  ssh-keyscan -t rsa github.com >> "${HOME}/.ssh/known_hosts"
+
+  echo "${ssh_private_key}" > "${HOME}/.ssh/id_ed25519"
+  chmod 400 "${HOME}/.ssh/id_ed25519"
+}
+
 function error_on_empty_variable()
 {
   local var_val var_name
@@ -151,6 +169,7 @@ function update_fork()
   fi
 
   # Push back changes
+  config_git
   if [[ ${skip_push} == "true" ]]; then
     print_info "Skipping git push!"
   else
@@ -161,7 +180,7 @@ function update_fork()
 
 function main()
 {
-  print_debug "Running with Arguments: ${@}"
+  print_debug "Running with Arguments: ${*}"
 
   while [ "${1}" != "" ]; do
     case ${1} in
@@ -169,12 +188,13 @@ function main()
       -x | --upstream-branch)     shift;upstream_branch="${1}";;
       -u | --upstream-url)        shift;upstream_url="${1}";;
       -b | --branch)              shift;checkout_branch="${1}";;
+      -k | --ssh-key)             shift;ssh_private_key="${1}";;
       -h | --help )               display_usage;
                                   exit $?
                                   ;;
       -n | --no-push)             skip_push="true";;
-      * )                         print_error "Invalid argument(s). See usage below."
-                                  usage;
+      * )                         print_error "Invalid argument: ${1} See usage below."
+                                  display_usage;
                                   exit 1
                                   ;;
     esac
@@ -185,6 +205,9 @@ function main()
   error_on_empty_variable "${upstream_branch}" "--upstream-branch"
   error_on_empty_variable "${upstream_url}" "--upstream-url"
   error_on_empty_variable "${checkout_branch}" "--branch"
+
+  print_error "Monkey"
+  git clone --depth=1 https://github.com/tprasadtp/terraform-provider-github /app
 
   configure_upstream
   update_fork

@@ -14,7 +14,7 @@ LABEL org.opencontainers.image.authors="Prasad Tengse<tprasadtp@users.noreply.gi
 
 ENV SYNC_FORK_VERSION="${VERSION}"
 # hadolint ignore=DL3018
-RUN apk add --no-cache curl bash git openssh-client && rm -rf /var/cache/apk/*
+RUN apk add --no-cache bash git openssh-client && rm -rf /var/cache/apk/*
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 

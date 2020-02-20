@@ -206,9 +206,6 @@ function main()
   error_on_empty_variable "${upstream_url}" "--upstream-url"
   error_on_empty_variable "${checkout_branch}" "--branch"
 
-  print_error "Monkey"
-  git clone --depth=1 https://github.com/tprasadtp/terraform-provider-github /app
-
   configure_upstream
   update_fork
 

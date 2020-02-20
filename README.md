@@ -9,7 +9,7 @@ name: fork
 jobs:
   fork:
     - name: sync-fork
-      uses: tprasadtp/sync-fork@0.1.1
+      uses: tprasadtp/forklift@0.1.1
       with:
         upstream_url: "URL for upstream repo. This must be HTTP" # Required! Upstream https clone URL
         upstream_branch: "master"   # Upstream Branch to use

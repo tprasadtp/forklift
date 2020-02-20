@@ -156,8 +156,17 @@ function update_fork()
         exit 1
       fi
   elif [[ ${merge_method} == "merge-ff" ]]; then
-    print_info "Using ff merge"
+    print_info "Using merge with --ff-only"
     git merge --ff-only "upstream/${upstream_branch}" "${checkout_branch}"
+    CONFLICTS="$(git ls-files -u | wc -l)"
+    if [[ $CONFLICTS -gt 0 ]] ; then
+      print_error "Oops! merge conflict(s). Aborting"
+      git merge --abort
+      exit 1
+    fi
+  elif [[ ${merge_method} == "merge" ]]; then
+    print_info "Using merge"
+    git merge "upstream/${upstream_branch}" "${checkout_branch}"
     CONFLICTS="$(git ls-files -u | wc -l)"
     if [[ $CONFLICTS -gt 0 ]] ; then
       print_error "Oops! merge conflict(s). Aborting"

@@ -40,8 +40,5 @@ runs:
     - ${{ inputs.upstream_url }}
     - '--upstream-branch'
     - ${{ inputs.upstream_branch }}
-    # Keys
-    - '--ssh-key'
-    - ${{ inputs.KEY }}
     # Extra
     - ${{ inputs.args }}

@@ -1,5 +1,5 @@
 name: "ForkLift"
-description: "Keeps Minimal forks updated with their upstream couterparts"
+description: "Keeps Minimal forks updated with their upstream counter part"
 branding:
   icon: "chevrons-right"
   color: "blue"

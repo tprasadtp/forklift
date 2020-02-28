@@ -1,6 +1,6 @@
 # Set the shell
 SHELL := /bin/bash
-NAME := sync-fork
+NAME := forklift
 
 # Base of operations
 ROOT_DIR := $(strip $(patsubst %/, %, $(dir $(realpath $(firstword $(MAKEFILE_LIST))))))
@@ -31,9 +31,6 @@ DOCKER_BUILDKIT ?= 1
 
 DOCKER_USER := tprasadtp
 
-# Prefix for github package registry images
-DOCKER_PREFIX_GITHUB := docker.pkg.github.com/$(DOCKER_USER)/$(NAME)
-
 .PHONY: lint
 lint: docker-lint shellcheck ## Lint Everything
 
@@ -60,47 +57,34 @@ docker: ## Build DockerHub image (runs as root inide docker)
 		-f $(ROOT_DIR)/src/Dockerfile \
 		$(ROOT_DIR)/src
 	@if [ $(BRANCH) == "master" ]; then \
-		echo -e "\033[92m✱ Tagging as latest \033[0m"; \
-		docker tag $(NAME) $(DOCKER_USER)/$(NAME):latest; \
-		docker tag $(NAME) $(DOCKER_PREFIX_GITHUB)/$(NAME):latest; \
 		if [ ! -z $(VERSION) ]; then \
 		echo -e "\033[92m✱ Tagging as $(VERSION)\033[0m"; \
-			docker tag $(NAME) $(DOCKER_USER)/$(NAME):$(VERSION); \
-			docker tag $(NAME) $(DOCKER_PREFIX_GITHUB)/$(NAME):$(VERSION); \
+			#docker tag $(NAME) $(DOCKER_USER)/$(NAME):$(VERSION); \
 		else \
-		echo -e "\033[93m✱ Commit is dirty or not tagged with a version\033[0m"; \
+			echo -e "\033[93m✱ Commit is dirty or not tagged with a version\033[0m"; \
+			echo -e "\033[92m✱ on Branch master, but not tagged. Tagging as latest \033[0m"; \
+			#docker tag $(NAME) $(DOCKER_USER)/$(NAME):latest; \
 		fi; \
 	else \
 		echo -e "\033[95m✱ Tagging as $(BRANCH)\033[0m"; \
-		docker tag $(NAME) $(DOCKER_USER)/$(NAME):$(BRANCH); \
-		docker tag $(NAME) $(DOCKER_PREFIX_GITHUB)/$(NAME):$(BRANCH); \
+		#docker tag $(NAME) $(DOCKER_USER)/$(NAME):$(BRANCH); \
 	fi
 
 .PHONY: docker-push
 docker-push: ## Push docker images (action and user images)
 	@echo -e "\033[92m➜ $@ \033[0m"
 	@if [ $(BRANCH) == "master" ]; then \
-		echo -e "\033[92m✱ Pushing Tag: latest [DockerHub]\033[0m"; \
-		docker push $(DOCKER_USER)/$(NAME):latest; \
 		if [ ! -z $(VERSION) ]; then \
-		echo -e "\033[92m✱ Pushing Tag: $(VERSION) [DockerHub]\033[0m"; \
-			docker push $(DOCKER_USER)/$(NAME):$(VERSION); \
+			echo -e "\033[92m✱ Pushing Tag: $(VERSION) [DockerHub]\033[0m"; \
+			#docker push $(DOCKER_USER)/$(NAME):$(VERSION); \
 		else \
-		echo -e "\033[93m✱ Skip Pushing Version Tags [DockerHub]\033[0m"; \
-		fi; \
-		echo -e "\033[92m✱ Pushing Tag: latest [GitHub]\033[0m"; \
-		#docker push $(DOCKER_PREFIX_GITHUB)/$(NAME):latest; \
-		if [ ! -z $(VERSION) ]; then \
-		echo -e "\033[92m✱ Pushing Tag: $(VERSION) [GitHub] \033[0m"; \
-			docker push $(DOCKER_PREFIX_GITHUB)/$(NAME):$(VERSION); \
-		else \
-		echo -e "\033[93m✱ Skip Pushing Version Tags [GitHub]\033[0m"; \
+			echo -e "\033[93m✱ Skip Pushing Version Tags [DockerHub]\033[0m"; \
+			echo -e "\033[92m✱ On Branch master Pushing Tag: latest [DockerHub]\033[0m"; \
+			#docker push $(DOCKER_USER)/$(NAME):latest; \
 		fi; \
 	else \
 		echo -e "\033[92m✱ Pushing Tag: $(BRANCH)[DockerHub].\033[0m"; \
-		docker push $(DOCKER_USER)/$(NAME):$(BRANCH); \
-		echo -e "\033[92m✱ Pushing Tag: $(BRANCH)[GitHub] \033[0m"; \
-		docker push $(DOCKER_PREFIX_GITHUB)/$(NAME):$(BRANCH); \
+		#docker push $(DOCKER_USER)/$(NAME):$(BRANCH); \
 	fi
 
 .PHONY: help

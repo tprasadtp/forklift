@@ -11,7 +11,7 @@ SEMVER_REGEX := ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[
 
 ifeq ($(GITHUB_ACTIONS),true)
 	# Parse REF. This can be tag or branch or PR.
-	GIT_REF := $(strip $(shell echo "${GITHUB_REF}" | sed -r 's/refs\/(head|tags|pull)\///g;s/[\/\*\#]+/-/g'))
+	GIT_REF := $(strip $(shell echo "${GITHUB_REF}" | sed -r 's/refs\/(heads|tags|pull)\///g;s/[\/\*\#]+/-/g'))
 	GITHUB_SHA_SHORT := $(shell echo "$${GITHUB_SHA:0:7}")
 	GIT_TREE_DIRTY := false
 else

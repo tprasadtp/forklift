@@ -45,7 +45,7 @@ Keeps minimally modified forks in sync.
 Please do not use this for forks with extensive
 modifications as it might lead to lot of conflicts.
 -----------------------------------------------------------
-[-m --method]           [Method to use. (Defaults to merge-ff)]
+[-m --method]           [Method to use. (Defaults to rebase)]
 [-b --branch]           [Branch to merge/rebase]
 [-x --upstream-branch]  [Upstream Branch to merge/rebase (Defaults to master)]
 [-u --upstream-url]     [Upstream URL to set (Required)]

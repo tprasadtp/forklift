@@ -1,6 +1,16 @@
 name: build
 on:
   push:
+    paths-ignore:
+      - ".gitignore"
+      - ".envrc"
+      - "**.md"
+      - ".vscode/**"
+      - ".dependabot/**"
+      - "_config.yml"
+      # Labels
+      - ".github/labels.toml"
+      - ".github/workflows/labels.yml"
   pull_request:
 jobs:
   # lint everything
@@ -23,27 +33,28 @@ jobs:
         run: |
           make debug-vars
           make docker
+          env | grep GIT
 
       # - name: Docker Login to Registry (GitHub)
       #   run: echo "$DOCKER_PASSWORD" | docker login docker.pkg.github.com -u "$DOCKER_USERNAME" --password-stdin
       #   env:
       #     DOCKER_USERNAME: tprasadtp
       #     DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-      #   if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev'
+      #   if: github.event_name	== 'push' || ( github.event_name == 'pull' &&  github.actor	== 'tprasadtp' )
 
       - name: Docker Login to Registry (DockerHub)
         run: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         env:
           DOCKER_USERNAME: tprasadtp
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        if: github.event_name	== 'push'
+        if: github.event_name	== 'push' || ( github.event_name == 'pull_request' &&  github.actor	== 'tprasadtp' )
 
       - name: Docker Push
         run: make docker-push
-        if: github.event_name	== 'push'
+        if: github.event_name	== 'push' || ( github.event_name == 'pull_request' &&  github.actor	== 'tprasadtp' )
 
       - name: Docker Cleanup
         run: |
           docker logout || true
           rm -f ${HOME}/.docker/config.json
-        if: github.event_name	== 'push'
+        if: github.event_name	== 'push' || ( github.event_name == 'pull_request' &&  github.actor	== 'tprasadtp' )

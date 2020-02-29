@@ -4,14 +4,14 @@ NAME := forklift
 
 # Base of operations
 ROOT_DIR := $(strip $(patsubst %/, %, $(dir $(realpath $(firstword $(MAKEFILE_LIST))))))
-SEMVER_REGEX := ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+# SEMVER_REGEX := ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
 
 # Default Goal
 .DEFAULT_GOAL := help
 
 ifeq ($(GITHUB_ACTIONS),true)
 	# Parse REF. This can be tag or branch or PR.
-	GIT_REF := $(strip $(shell echo "${GITHUB_REF}" | sed -r 's/refs\/(head|tags|pull)\///g;s/[\/\*\#]+/-/g'))
+	GIT_REF := $(strip $(shell echo "${GITHUB_REF}" | sed -r 's/refs\/(heads|tags|pull)\///g;s/[\/\*\#]+/-/g'))
 	GITHUB_SHA_SHORT := $(shell echo "$${GITHUB_SHA:0:7}")
 	GIT_TREE_DIRTY := false
 else
@@ -129,10 +129,12 @@ debug-vars:
 	@echo "ROOT_DIR: $(ROOT_DIR)"
 	@echo "GITHUB_ACTIONS: $(GITHUB_ACTIONS)"
 	@echo "GITHUB_WORKFLOW: $(GITHUB_WORKFLOW)"
+	@echo "GITHUB_EVENT: $(GITHUB_EVENT)"
 	@echo "GITHUB_RUN_NUMBER: $(GITHUB_RUN_NUMBER)"
+	@echo "GITHUB_REF: $(GITHUB_REF)"
 	@echo "BRANCH: $(BRANCH)"
-	@echo "GIT_SHA: $(GIT_SHA)"
-	@echo "GIT_SHA_SHORT: $(GIT_SHA_SHORT)"
+	@echo "GITHUB_SHA: $(GITHUB_SHA)"
+	@echo "GITHUB_SHA_SHORT: $(GITHUB_SHA_SHORT)"
 	@echo "GIT_TREE_CLEAN: $(GIT_TREE_CLEAN)"
 	@echo "GIT_REF: $(GIT_REF)"
 	@echo "GIT_TAG: $(GIT_TAG)"

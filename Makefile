@@ -4,88 +4,107 @@ NAME := forklift
 
 # Base of operations
 ROOT_DIR := $(strip $(patsubst %/, %, $(dir $(realpath $(firstword $(MAKEFILE_LIST))))))
+SEMVER_REGEX := ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
 
 # Default Goal
 .DEFAULT_GOAL := help
 
-# Embrace Extend and .. ooff Sorry, We dont do that anymore! We Love OpenSource. Said MikroSofty
 ifeq ($(GITHUB_ACTIONS),true)
-	BRANCH := $(shell echo "$$GITHUB_REF" | cut -d '/' -f 3- | sed -r 's/[\/\*\#]+/-/g' )
+	# Parse REF. This can be tag or branch or PR.
+	GIT_REF := $(strip $(shell echo "${GITHUB_REF}" | sed -r 's/refs\/(head|tags|pull)\///g;s/[\/\*\#]+/-/g'))
+	GITHUB_SHA_SHORT := $(shell echo "$${GITHUB_SHA:0:7}")
+	GIT_TREE_DIRTY := false
 else
-	BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
-	GITHUB_SHA := $(shell git rev-parse HEAD)
-	GITHUB_WORKFLOW := local
+	# If in detached head state this will give HEAD
+	BRANCH := $(strip $(shell git rev-parse --abbrev-ref HEAD | sed -r 's/[\/\*\#]+/-/g'))
+	# Get Tag
+	GIT_TAG := $(strip $(shell git describe --exact-match --contains HEAD 2> /dev/null))
+	# Generate GITHUB_* vars
+	GITHUB_SHA := $(shell git log -1 --pretty=format:"%H")
+	GITHUB_SHA_SHORT := $(shell git log -1 --pretty=format:"%h")
+	GITHUB_WORKFLOW := "local"
 	GITHUB_RUN_NUMBER := "0"
-	GITUNTRACKEDCHANGES := $(shell git status --porcelain --untracked-files=no)
-	ifeq ($(GITUNTRACKEDCHANGES),)
-		VERSION := $(shell git describe --exact-match --contains HEAD)
+
+	# Get list of untracked changes
+	GIT_UNTRACKED_CHANGES := $(shell git status --porcelain --untracked-files=no)
+
+	# We are now in detached HEAD state.
+	ifeq ($(BRANCH),HEAD)
+		__GIT_REF := $(GIT_SHA_SHORT)
+	# We are on master branch
+	else ifeq ($(BRANCH),master)
+		__GIT_REF := master
+	# None
 	else
-		VERSION := ""
+		__GIT_REF := $(BRANCH)
+	endif
+
+	# Check if dirty and deal with tags
+	ifeq ($(GIT_UNTRACKED_CHANGES),)
+		# Tree is clean
+		GIT_TREE_DIRTY := false
+		ifeq ($(GIT_TAG),)
+			GIT_REF := $(__GIT_REF)
+		else
+			GIT_REF := $(GIT_TAG)
+		endif
+	else
+		GIT_TREE_DIRTY := true
+		GIT_REF := $(__GIT_REF)
 	endif
 endif
 
+
 # Version
+ifeq ($(GIT_REF), master)
+	DOCKER_TAG ?= latest
+else
+	DOCKER_TAG ?= $(GIT_REF)
+endif
 
 # Enable Buidkit if not disabled
 DOCKER_BUILDKIT ?= 1
 
 DOCKER_USER := tprasadtp
 
+
 .PHONY: lint
-lint: docker-lint shellcheck ## Lint Everything
+lint: docker-lint shellcheck ## Lint {shellcheck, dockerlint}.
 
 
 .PHONY: docker-lint
-docker-lint: ## Lint Dockerfiles
+docker-lint: ## Runs the linter on Dockerfiles.
 	@echo -e "\033[92m➜ $@ \033[0m"
 	docker run --rm -i hadolint/hadolint < $(ROOT_DIR)/src/Dockerfile
+
 
 .PHONY: shellcheck
 shellcheck: ## Runs the shellcheck.
 	@echo -e "\033[92m➜ $@ \033[0m"
 	shellcheck -e SC2036 $(ROOT_DIR)/src/entrypoint.sh
 
+
 .PHONY: docker
-docker: ## Build DockerHub image (runs as root inide docker)
+docker: ## Build docker image.
 	@echo -e "\033[92m➜ $@ \033[0m"
-	@echo -e "\033[92m✱ Building Docker Image\033[0m"
-	@DOCKER_BUILDKIT=$(DOCKER_BUILDKIT) docker build --target action -t $(NAME) \
+	@echo -e "\033[92m✱ Building Docker Image $(DOCKER_USER)/$(NAME):$(DOCKER_TAG)\033[0m"
+	DOCKER_BUILDKIT=$(DOCKER_BUILDKIT) docker build --target action \
+		-t $(DOCKER_USER)/$(NAME):$(DOCKER_TAG) \
 		--build-arg GITHUB_SHA=$(GITHUB_SHA) \
 		--build-arg GITHUB_WORKFLOW=$(GITHUB_WORKFLOW) \
 		--build-arg GITHUB_RUN_NUMBER=$(GITHUB_RUN_NUMBER) \
-		--build-arg VERSION=$(VERSION) \
+		--build-arg VERSION=$(GIT_REF) \
+		--build-arg GIT_TREE_DIRTY=$(GIT_TREE_DIRTY) \
 		-f $(ROOT_DIR)/src/Dockerfile \
 		$(ROOT_DIR)/src
-	@if [ $(BRANCH) == "master" ]; then \
-		if [ ! -z $(VERSION) ]; then \
-		echo -e "\033[92m✱ Tagging as $(VERSION)\033[0m"; \
-			#docker tag $(NAME) $(DOCKER_USER)/$(NAME):$(VERSION); \
-		else \
-			echo -e "\033[93m✱ Commit is dirty or not tagged with a version\033[0m"; \
-			echo -e "\033[92m✱ on Branch master, but not tagged. Tagging as latest \033[0m"; \
-			#docker tag $(NAME) $(DOCKER_USER)/$(NAME):latest; \
-		fi; \
-	else \
-		echo -e "\033[95m✱ Tagging as $(BRANCH)\033[0m"; \
-		#docker tag $(NAME) $(DOCKER_USER)/$(NAME):$(BRANCH); \
-	fi
+
 
 .PHONY: docker-push
-docker-push: ## Push docker images (action and user images)
+docker-push: ## Push docker image.
 	@echo -e "\033[92m➜ $@ \033[0m"
-	@if [ $(BRANCH) == "master" ]; then \
-		if [ ! -z $(VERSION) ]; then \
-			echo -e "\033[92m✱ Pushing Tag: $(VERSION) [DockerHub]\033[0m"; \
-			#docker push $(DOCKER_USER)/$(NAME):$(VERSION); \
-		else \
-			echo -e "\033[93m✱ Skip Pushing Version Tags [DockerHub]\033[0m"; \
-			echo -e "\033[92m✱ On Branch master Pushing Tag: latest [DockerHub]\033[0m"; \
-			#docker push $(DOCKER_USER)/$(NAME):latest; \
-		fi; \
-	else \
-		echo -e "\033[92m✱ Pushing Tag: $(BRANCH)[DockerHub].\033[0m"; \
-		#docker push $(DOCKER_USER)/$(NAME):$(BRANCH); \
-	fi
+	@echo -e "\033[92m✱ Pushing $(DOCKER_USER)/$(NAME):$(DOCKER_TAG) [DockerHub]\033[0m"
+	docker push $(DOCKER_USER)/$(NAME):$(DOCKER_TAG)
+
 
 .PHONY: help
 help: ## This help dialog.
@@ -104,11 +123,18 @@ help: ## This help dialog.
         printf "%s\n" $$help_info; \
     done
 
+
 .PHONY: debug-vars
 debug-vars:
-	@echo "GITHUB_ACTIONS: ${GITHUB_ACTIONS}"
-	@echo "VERSION: ${VERSION}"
-	@echo "BRANCH: ${BRANCH}"
-	@echo "GITHUB_SHA: ${GITHUB_SHA}"
-	@echo "GITHUB_WORKFLOW: ${GITHUB_WORKFLOW}"
-	@echo "GITHUB_RUN_NUMBER: ${GITHUB_RUN_NUMBER}"
+	@echo "ROOT_DIR: $(ROOT_DIR)"
+	@echo "GITHUB_ACTIONS: $(GITHUB_ACTIONS)"
+	@echo "GITHUB_WORKFLOW: $(GITHUB_WORKFLOW)"
+	@echo "GITHUB_RUN_NUMBER: $(GITHUB_RUN_NUMBER)"
+	@echo "BRANCH: $(BRANCH)"
+	@echo "GIT_SHA: $(GIT_SHA)"
+	@echo "GIT_SHA_SHORT: $(GIT_SHA_SHORT)"
+	@echo "GIT_TREE_CLEAN: $(GIT_TREE_CLEAN)"
+	@echo "GIT_REF: $(GIT_REF)"
+	@echo "GIT_TAG: $(GIT_TAG)"
+	@echo "DOCKER_TAG : $(DOCKER_TAG)"
+	@echo "DOCKER_BUILDKIT: $(DOCKER_BUILDKIT)"

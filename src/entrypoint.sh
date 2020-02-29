@@ -1,6 +1,6 @@
 #!/bin/bash
 set -eo pipefail
-readonly SCRIPT="docker run -it tprasadtp/sync-fork:latest"
+readonly SCRIPT="docker run -it tprasadtp/forklift:latest"
 readonly YELLOW=$'\e[33m'
 readonly GREEN=$'\e[32m'
 readonly RED=$'\e[31m'
@@ -52,7 +52,8 @@ modifications as it might lead to lot of conflicts.
 [--no-push]             [Skip Git Push]
 [-h --help]             [Display this help message]
 
-Version: ${SYNC_FORK_VERSION:-UNKNOWN}
+Version: ${GITHUB_REF:-UNKNOWN}
+SHA    : ${GITHUB_SHA:-NA}
 
 This is best used as github action.
 For info on how to do it see https://github.com/tprasadtp/sync-fork
@@ -111,8 +112,6 @@ function config_git()
   print_info "Setting up Git Config"
   git config user.name "${GIT_USER:-$GITHUB_ACTOR}"
   git config user.email "${GIT_EMAIL:-$GITHUB_ACTOR@users.noreply.github.com}"
-
-
 }
 
 function error_on_empty_variable()
@@ -131,6 +130,10 @@ function error_on_empty_variable()
 
 function update_fork()
 {
+
+  print_info "Unshallow"
+  git fetch --prune --unshallow
+
   print_info "Checkout ${checkout_branch}"
 
   git checkout "${checkout_branch}"

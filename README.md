@@ -14,9 +14,6 @@ jobs:
     steps:
     - name: sync-fork
     - uses: actions/checkout@v2
-      # This step is essential to avoid unrelated histories error.
-    - run: |
-        git fetch --prune --unshallow
     - uses: tprasadtp/forklift@master # Prefer using tagged version
       with:
         upstream_url: "URL for upstream repo. This must be HTTP" # Required! Upstream https clone URL

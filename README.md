@@ -21,7 +21,6 @@ jobs:
         branch: "master"   # Local Branch
         method: "rebase"   # Method to use. Can be `merge`, `merge-ff-only` or `rebase`.
         args: "--no-push"  # Additional Arguments to pass to the container
-...
 ```
 
 ## Help

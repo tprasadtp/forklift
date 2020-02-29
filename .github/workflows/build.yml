@@ -8,8 +8,6 @@ on:
       - ".vscode/**"
       - ".dependabot/**"
       - "_config.yml"
-    tags:
-      - "v*"
   pull_request:
 jobs:
   # lint everything

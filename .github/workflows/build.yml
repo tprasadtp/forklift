@@ -24,7 +24,6 @@ jobs:
           make debug-vars
           make docker
           env | grep GITHUB_
-          echo ${GITHUB_REF}
 
       # - name: Docker Login to Registry (GitHub)
       #   run: echo "$DOCKER_PASSWORD" | docker login docker.pkg.github.com -u "$DOCKER_USERNAME" --password-stdin

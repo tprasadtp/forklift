@@ -10,7 +10,7 @@ on:
       - ".vscode/**"
       - ".dependabot/**"
       - "_config.yml"
-name: lables
+name: labels
 jobs:
   labels:
     name: labels

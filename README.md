@@ -1,7 +1,7 @@
 # Sync Fork
 
 [![build](https://github.com/tprasadtp/forklift/workflows/build/badge.svg?branch=master)](https://github.com/tprasadtp/forklift/actions?query=workflow%3Abuild)
-[![labels](https://github.com/tprasadtp/forklift/workflows/labels/badge.svg?branch=master)](https://github.com/tprasadtp/forklift/actions?query=workflow%3Alabels)
+[![lables](https://github.com/tprasadtp/forklift/workflows/lables/badge.svg)](https://github.com/tprasadtp/forklift/actions?query=workflow%3Alabels)
 
 Keeps Minimally modified forks in sync.
 

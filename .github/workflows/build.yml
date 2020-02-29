@@ -8,6 +8,9 @@ on:
       - ".vscode/**"
       - ".dependabot/**"
       - "_config.yml"
+      # Labels
+      - ".github/labels.toml"
+      - ".github/workflows/labels.yml"
   pull_request:
 jobs:
   # lint everything

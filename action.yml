@@ -19,10 +19,6 @@ inputs:
     description: "Method to use. Can be `merge`, `merge-ff-only` or `rebase`."
     required: true
     default: "rebase"
-  sync_tags:
-    description: "Sync Tags"
-    default: "false"
-    required: true
   args:
     description: "Extra arguments"
     default: ""

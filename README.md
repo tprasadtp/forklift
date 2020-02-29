@@ -27,6 +27,8 @@ jobs:
 ## Help
 
 ```console
+Usage: docker run -it tprasadtp/forklift:latest   [options]
+
 Keeps minimally modified forks in sync.
 Please do not use this for forks with extensive
 modifications as it might lead to lot of conflicts.
@@ -38,7 +40,8 @@ modifications as it might lead to lot of conflicts.
 [--no-push]             [Skip Git Push]
 [-h --help]             [Display this help message]
 
-Version: 0.1.4
+Version: master
+SHA    : 81ef4e67b8beef4ff1ef285c3e5f80b803b3bcb3
 
 This is best used as github action.
 For info on how to do it see https://github.com/tprasadtp/sync-fork

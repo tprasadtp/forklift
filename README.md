@@ -2,6 +2,7 @@
 
 [![build](https://github.com/tprasadtp/forklift/workflows/build/badge.svg?branch=master)](https://github.com/tprasadtp/forklift/actions?query=workflow%3Abuild)
 [![lables](https://github.com/tprasadtp/forklift/workflows/lables/badge.svg)](https://github.com/tprasadtp/forklift/actions?query=workflow%3Alabels)
+![Analytics](https://ga-beacon.prasadt.com/UA-101760811-3/github/forklift?pink&useReferer)
 
 Keeps Minimally modified forks in sync.
 

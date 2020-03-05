@@ -1,19 +1,21 @@
-# Set Shell
-SHELL := /bin/bash
-NAME := forklift
+# Set Help, default goal and WATCHTOWER_BASE
+include help.mk
+
+# Name of the project and docker image
+NAME  := forklift
 
 # OCI Metadata
-IMAGE_TITLE := "Keep Forks in Sync"
-IMAGE_DESC := "GitHub Action to keep minimally modified forks in sync"
-IMAGE_URL := "https://hub.docker.com/r/tprasadtp/forklift"
-IMAGE_SOURCE := "https://github.com/tprasadtp/forklift"
-IMAGE_LICENSES := "MIT"
-IMAGE_DOCUMENTATION_URL := "https://github.com/tprasadtp/forklift"
+IMAGE_TITLE             := Keep Forks in Sync
+IMAGE_DESC              := GitHub Action to keep minimally modified forks in sync
+IMAGE_URL               := https://hub.docker.com/r/tprasadtp/forklift
+IMAGE_SOURCE            := https://github.com/tprasadtp/forklift
+IMAGE_LICENSES          := MIT
+IMAGE_DOCUMENTATION     := https://github.com/tprasadtp/forklift
 
-include base.mk
+# Relative to
+DOCKER_CONTEXT_DIR := $(WATCHTOWER_BASE)/src
 
-# Because we need ROOT_DIR
-DOCKER_CONTEXT_DIR := $(ROOT_DIR)/src
+include docker.mk
 
 .PHONY: shellcheck
 shellcheck: ## Runs the shellcheck.

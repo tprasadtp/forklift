@@ -2,14 +2,10 @@ on:
   push:
     branches:
       - master
-      - test-tags
-    paths-ignore:
-      - ".gitignore"
-      - ".envrc"
-      - "**.md"
-      - ".vscode/**"
-      - ".dependabot/**"
-      - "_config.yml"
+    paths:
+      # Labels Only
+      - ".github/labels.toml"
+      - ".github/workflows/labels.yml"
 name: labels
 jobs:
   labels:

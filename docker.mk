@@ -200,3 +200,7 @@ debug-docker-vars:
 	@echo "GIT_REF              : $(GIT_REF)"
 	@echo "GIT_TAG              : $(GIT_TAG)"
 	@echo "GIT_DIRTY            : $(GIT_DIRTY)"
+	@echo "------------ UPSTREAM VARIABLES ---------------"
+	@echo "VERSION              : $(VERSION)"
+	@echo "UPSTREAM_PRESENT     : $(UPSTREAM_PRESENT)"
+	@echo "UPSTREAM_ARGS        : $(UPSTREAM_ARGS)"

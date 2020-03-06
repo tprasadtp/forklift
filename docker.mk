@@ -144,7 +144,7 @@ docker: ## Build docker image.
     --label org.opencontainers.image.documentation="$(IMAGE_DOCUMENTATION)" \
     --label org.opencontainers.image.title="$(IMAGE_TITLE)" \
     --label org.opencontainers.image.description="$(IMAGE_DESC)" \
-    --label org.opencontainers.image.version="$(GIT_REF)" \
+    --label org.opencontainers.image.version="$(VERSION)" \
     --label org.opencontainers.image.licenses="$(IMAGE_LICENSES)" \
     --label io.github.tprasadtp.build.system="$(IMAGE_BUILD_SYSTEM)" \
     --label io.github.tprasadtp.build.host="$(IMAGE_BUILD_HOST)" \
@@ -156,7 +156,7 @@ docker: ## Build docker image.
     --label io.github.tprasadtp.git.commit="$(GIT_COMMIT)" \
     --label io.github.tprasadtp.upstream.present="$(UPSTREAM_PRESENT)" \
     $(UPSTREAM_ARGS) \
-    --file  $(DOCKER_CONTEXT_DIR)/Dockerfile \
+    --file $(DOCKER_CONTEXT_DIR)/Dockerfile \
     $(DOCKER_CONTEXT_DIR)/
 	docker $(DOCKER_INSPECT_ARGS) $(firstword $(DOCKER_TAGS)) $(DOCKER_INSPECT_PARSER)
 

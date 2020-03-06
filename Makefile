@@ -20,4 +20,4 @@ include docker.mk
 .PHONY: shellcheck
 shellcheck: ## Runs the shellcheck.
 	@echo -e "\033[92m➜ $@ \033[0m"
-	shellcheck -e SC2036 $(ROOT_DIR)/src/entrypoint.sh
+	shellcheck -e SC2036 $(WATCHTOWER_BASE)/src/entrypoint.sh

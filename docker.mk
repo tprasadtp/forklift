@@ -48,8 +48,8 @@ ifeq ($(GITHUB_ACTIONS),true)
 	#  - Branch name in branch push builds
 	#  - Tagname in tag push builds
 	#  - Pull request number in PR builds.
-	GIT_REF            := $(strip $(shell echo "${GITHUB_REF}" | sed -r 's/refs\/(heads|tags|pull)\///g;s/[\/\*\#]+/-/g'))
-	GITHUB_SHA_SHORT   := $(shell echo "${GITHUB_SHA:0:7}")
+	GIT_REF            := $(strip $(shell echo "$${GITHUB_REF}" | sed -r 's/refs\/(heads|tags|pull)\///g;s/[\/\*\#]+/-/g'))
+	GITHUB_SHA_SHORT   := $(shell echo "$${GITHUB_SHA:0:7}")
 	GIT_DIRTY          := false
 	IMAGE_BUILD_SYSTEM := actions
 	IMAGE_BUILD_HOST   := $(shell hostname -f)
@@ -89,7 +89,7 @@ endif
 VERSION ?= $(GIT_REF)
 
 # Check if we have buildx enabled
-ifeq ($(BUILDX),1)
+ifeq ($(BUILDX_ENABLE),1)
 	DOCKER_BUILD_COMMAND  := buildx build --platform $(BUILDX_PLATFORMS) $(shell if [[ "$(BUILDX_PUSH)" == "1" ]]; then echo "--push"; fi)
 	DOCKER_INSPECT_ARGS   := buildx imagetools inspect
 	DOCKER_INSPECT_PARSER :=
@@ -190,7 +190,6 @@ debug-docker-vars:
 	@echo "------------- ACTION VARIABLES ----------------"
 	@echo "GITHUB_ACTIONS       : $(GITHUB_ACTIONS)"
 	@echo "GITHUB_WORKFLOW      : $(GITHUB_WORKFLOW)"
-	@echo "GITHUB_EVENT         : $(GITHUB_EVENT)"
 	@echo "GITHUB_RUN_NUMBER    : $(GITHUB_RUN_NUMBER)"
 	@echo "GITHUB_REF           : $(GITHUB_REF)"
 	@echo "-------------- GIT VARIABLES ------------------"

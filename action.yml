@@ -28,8 +28,11 @@ runs:
   steps:
   - name: forklift
     shell: bash
+    run: ls -alh ${{ github.action_path }}
+  - name: forklift
+    shell: bash
     run: |
-      ./${{ github.action_path }}/forklift.sh \
+      bash ${{ github.action_path }}/forklift.sh \
       --method ${{ inputs.method }} \
       --branch ${{ inputs.branch }} \
       --upstream-url ${{ inputs.upstream_url }} \

@@ -28,9 +28,6 @@ runs:
   steps:
   - name: forklift
     shell: bash
-    run: ls -alh ${{ github.action_path }}
-  - name: forklift
-    shell: bash
     run: |
       bash ${{ github.action_path }}/forklift.sh \
       --method ${{ inputs.method }} \

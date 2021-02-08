@@ -9,10 +9,14 @@ Keeps Minimally modified forks in sync.
 ## Action
 
 This is best used as a cron triggered GitHub action. Example usage is shown below.
+If upstream URL is not http, user should setup ssh keys and configs *BEFORE*
+running this action.
 
 ```yaml
 name: forklift
 on:
+  # Manually dispatch
+  workflow_dispatch:
   schedule:
     # Every Friday
     - cron:  "0 18 * * FRI"

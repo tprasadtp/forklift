@@ -1,31 +1,10 @@
 name: build
 on:
   push:
-    paths-ignore:
-      - ".gitignore"
-      - ".envrc"
-      - "**.md"
-      - ".vscode/**"
-      - ".dependabot/**"
-      - "_config.yml"
-      # Labels
-      - ".github/labels.toml"
-      - ".github/workflows/labels.yml"
   pull_request:
 jobs:
-  # lint everything
+  # shellcheck
   lint:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        linter: [docker-lint, shellcheck]
-    steps:
-      - uses: actions/checkout@v2
-      - name: Lint
-        run: make ${{ matrix.linter }}
-  # Build docker images
-  docker:
-    needs: lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

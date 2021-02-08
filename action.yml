@@ -24,17 +24,13 @@ inputs:
     default: ""
     required: false
 runs:
-  using: "docker"
-  image: "src/Dockerfile"
-  args:
-    - '--method'
-    - ${{ inputs.method }}
-    - '--branch'
-    - ${{ inputs.branch }}
-    # Upstream
-    - '--upstream-url'
-    - ${{ inputs.upstream_url }}
-    - '--upstream-branch'
-    - ${{ inputs.upstream_branch }}
-    # Extra
-    - ${{ inputs.args }}
+  using: "composite"
+    - name: forklift
+      shell: bash
+      run: |
+      ./${{ github.action_path }}/forklift.sh \
+        --method ${{ inputs.method }} \
+        --branch ${{ inputs.branch }} \
+        --upstream-url ${{ inputs.upstream_url }} \
+        --upstream-branch ${{ inputs.upstream_branch }} \
+        ${{ inputs.args }}

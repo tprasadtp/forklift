@@ -25,12 +25,13 @@ inputs:
     required: false
 runs:
   using: "composite"
-    - name: forklift
-      shell: bash
-      run: |
+  steps:
+  - name: forklift
+    shell: bash
+    run: |
       ./${{ github.action_path }}/forklift.sh \
-        --method ${{ inputs.method }} \
-        --branch ${{ inputs.branch }} \
-        --upstream-url ${{ inputs.upstream_url }} \
-        --upstream-branch ${{ inputs.upstream_branch }} \
-        ${{ inputs.args }}
+      --method ${{ inputs.method }} \
+      --branch ${{ inputs.branch }} \
+      --upstream-url ${{ inputs.upstream_url }} \
+      --upstream-branch ${{ inputs.upstream_branch }} \
+      ${{ inputs.args }}
